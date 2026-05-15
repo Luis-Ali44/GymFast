@@ -17,6 +17,9 @@ class MachineUpdate(BaseModel):
 class MachineStatus(BaseModel):
     estado: str = Field(..., pattern="^(activo|Descompuesto)$")
 
+class MachineDelet(BaseModel):
+    machine_id: str
+
 
 @router.get("/all")
 def get_machines(authorization: str = Header(...)):
@@ -100,5 +103,22 @@ def update_status(machine_id: str, Data: MachineStatus, authorization: str = Hea
         raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.delete ("/{machine_id}")
+def eliminar_machine(machine_id: str,  authorization: str = Header(...)):
+    token = authorization.replace("Bearer ", "")
+    try:
+        supabase = get_supabase(token)
+        response = supabase.table("gym_machines").delete().eq("id", machine_id).execute()
+        if response:
+            return {"messege": "maquina eliminada"}
+        else: 
+            raise  HTTPException(status_code=404, detail="Máquina no encontrada")
+    except HTTPException:
+        raise 
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
     
 
