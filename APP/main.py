@@ -14,7 +14,7 @@ app.include_router(machines_router, prefix="/machines",tags=["machines"])
 
 @app.get ("/")
 def welcome():
-    return "welcome the gym"
+    return "Ola papu :v"
 
 
 @app.get("/gyms")
@@ -39,15 +39,3 @@ def get_gyms(authorization: str = Header(...)):
     except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
     
-
-@app.get("/supervisores")
-def get_supervisores(authorization: str = Header(...)):
-    token = authorization.replace("Bearer ", "")
-
-    try:
-        supabase= get_supabase(token)
-        response = supabase.table("supervisors").select("*").execute()
-        return response.data
-    except Exception as e:
-            raise HTTPException(status_code=400, detail=str(e))
-   
